@@ -6,7 +6,17 @@ RSpec.describe Nyauth::BaseController do
   end
 
   context 'when nyauth parent_controller is another controller' do
-    before { Nyauth.configuration.parent_controller = 'AnotherApplicationController' }
+    before do
+      Nyauth.configuration.parent_controller = 'AnotherApplicationController'
+      Nyauth.__send__(:remove_const, :BaseController)
+      load "app/controllers/nyauth/base_controller.rb"
+    end
+
+    after do
+      Nyauth.configuration.parent_controller = 'ApplicationController'
+      Nyauth.__send__(:remove_const, :BaseController)
+      load "app/controllers/nyauth/base_controller.rb"
+    end
 
     it_behaves_like 'Nyauth::SessionConcern'
   end
